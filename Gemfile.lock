@@ -1,0 +1,24 @@
+PATH
+  remote: .
+  specs:
+    exec_trace (0.0.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    minitest (5.14.3)
+    rake (13.0.3)
+    rake-compiler (1.1.1)
+      rake
+
+PLATFORMS
+  x86_64-darwin-19
+
+DEPENDENCIES
+  exec_trace!
+  minitest (~> 5.0)
+  rake (~> 13.0)
+  rake-compiler (~> 1.1)
+
+BUNDLED WITH
+   2.2.9
