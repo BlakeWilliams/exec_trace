@@ -15,4 +15,5 @@ jobs:
       run: |
         gem install bundler -v 2.2.9
         bundle install
+        bundle exec rake compile
         bundle exec rake
