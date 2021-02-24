@@ -211,10 +211,10 @@ cleanup(frame_t* frame)
   if (frame->subframe_count > 0) {
     for (int i = 0; i < frame->subframe_count; i++) {
       cleanup(frame->subframes[i]);
-      free(frame->subframes);
     }
   }
 
+  free(frame->subframes);
   free(frame);
 }
 
