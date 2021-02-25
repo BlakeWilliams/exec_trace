@@ -25,11 +25,11 @@ class ExecTraceMiddlewareTest < Minitest::Test
     refute_includes body, "exec_trace_details"
   end
 
-  def test_middleware_does_not_run_if_allowed_cb_returns_false
+  def test_middleware_does_not_run_if_permit_callback_returns_false
     env = Rack::MockRequest.env_for("http://localhost:3000/?exec_trace")
 
     cb = ->(env) { false }
-    _status, _headers, body = ExecTrace::Middleware.new(@app, allowed_cb: cb).call(env)
+    _status, _headers, body = ExecTrace::Middleware.new(@app, permit_callback: cb).call(env)
 
     refute_includes body, "exec_trace_details"
   end

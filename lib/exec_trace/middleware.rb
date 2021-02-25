@@ -2,15 +2,15 @@
 
 module ExecTrace
   class Middleware
-    def initialize(app, allowed_cb: ->(env) { true })
+    def initialize(app, permit_callback: ->(env) { true })
       @app = app
-      @allowed_cb = allowed_cb
+      @permit_callback = permit_callback
     end
 
     def call(env)
       request = Rack::Request.new(env)
 
-      if request.params.has_key?("exec_trace") && @allowed_cb.call(env)
+      if request.params.has_key?("exec_trace") && @permit_callback.call(env)
         status = headers = body = nil
 
         @file_cache = {}
