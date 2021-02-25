@@ -39,6 +39,32 @@ e.g.
 ]
 ```
 
+## Middleware
+
+`exec_trace` include a Rack middleware that can be used to visualize trace
+results on the page. The middleware should be included before everything you'd
+like to trace.
+
+```ruby
+# config.ru
+require 'exec_trace/middleware'
+
+use ExecTrace::Middleware
+```
+
+To run the middleware, add `exec_trace` to the url's query parameters. e.g.
+http://localhost:3000/dashboard?exec_trace
+
+The middleware takes an optional `allowed_cb` keyword argument that can be used
+to gate access to the middleware.
+
+```ruby
+# config.ru
+require 'exec_trace/middleware'
+
+use ExecTrace::Middleware, allowed_cb: ->(env) { env["current_user"].admin? }
+```
+
 ## Developing
 
 * To compile the C extension: `bundle exec rake compile`

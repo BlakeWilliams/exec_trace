@@ -10,4 +10,4 @@
 ext/Makefile
 ext/extconf.h
 ext/mkmf.log
-lib
+lib/exec_trace.bundle

@@ -2,11 +2,13 @@ PATH
   remote: .
   specs:
     exec_trace (0.0.1)
+      rack (~> 2)
 
 GEM
   remote: https://rubygems.org/
   specs:
     minitest (5.14.3)
+    rack (2.2.3)
     rake (13.0.3)
     rake-compiler (1.1.1)
       rake

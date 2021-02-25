@@ -264,4 +264,5 @@ void
 Init_exec_trace(void)
 {
   rb_define_global_function("exec_trace", exec_trace, 0);
+  rb_define_module("ExecTrace");
 }
