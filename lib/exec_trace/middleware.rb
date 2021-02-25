@@ -2,7 +2,7 @@
 
 module ExecTrace
   class Middleware
-    def initialize(app, allowed_cb = ->(env) { true })
+    def initialize(app, allowed_cb: ->(env) { true })
       @app = app
       @allowed_cb = allowed_cb
     end
@@ -83,9 +83,8 @@ module ExecTrace
       file_path, line_number = frame[0].split(":")
       @file_cache[file_path] ||= File.read(file_path).split("\n")
       @file_cache[file_path][line_number.to_i - 1]
-    rescue StandardError => e
-      puts "#{file_path}: #{e}"
-      puts "returning #{frame[0]}"
+    rescue StandardError
+      # fallback to file+line number
       return frame[0]
     end
   end
