@@ -2,23 +2,33 @@
 
 module ExecTrace
   class Middleware
-    def initialize(app)
+    def initialize(app, allowed_cb = ->(env) { true })
       @app = app
+      @allowed_cb = allowed_cb
     end
 
     def call(env)
-      status = headers = body = nil
+      request = Rack::Request.new(env)
 
-      trace = exec_trace do
-        status, headers, body = @app.call(env)
+      if request.params.has_key?("exec_trace") && @allowed_cb.call(env)
+        status = headers = body = nil
+
+        @file_cache = {}
+        trace = exec_trace do
+          status, headers, body = @app.call(env)
+        end
+
+        return [status, headers, body] unless headers["Content-Type"] =~ /text\/html/
+        body.close if body.respond_to?(:close)
+
+        response = Rack::Response.new(body, status, headers)
+        response.write template(trace)
+        response.finish
+      else
+        @app.call(env)
       end
-
-      return [status, headers, body] unless headers["Content-Type"] =~ /text\/html/
-      body.close if body.respond_to?(:close)
-
-      response = Rack::Response.new(body, status, headers)
-      response.write template(trace)
-      response.finish
+    ensure
+      @file_cache = {}
     end
 
     private
@@ -59,7 +69,7 @@ module ExecTrace
       <<~MARKUP
       <details class="exec_trace_details #{'exec_trace_no_subframes' if subframes.length == 0}">
         <summary class="exec_trace_line" style="margin-left: #{depth * 2}em;">
-          <strong style="display: inline-block; flex: 1;">#{name_for_frame(frame)}</strong>
+          <code style="display: inline-block; flex: 1;">#{name_for_frame(frame)}</code>
           <span style="padding: 8px">#{calls} calls</span>
           <span style="padding: 8px">#{time_in_ms}ms</span>
         </summary>
@@ -71,7 +81,8 @@ module ExecTrace
 
     def name_for_frame(frame)
       file_path, line_number = frame[0].split(":")
-      File.read(file_path).split("\n")[line_number.to_i - 1]
+      @file_cache[file_path] ||= File.read(file_path).split("\n")
+      @file_cache[file_path][line_number.to_i - 1]
     rescue StandardError => e
       puts "#{file_path}: #{e}"
       puts "returning #{frame[0]}"
